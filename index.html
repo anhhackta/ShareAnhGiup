@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShareAnhGiup - Chia sẻ ảnh đẹp</title>
+    <meta name="description" content="Chia sẻ và khám phá ảnh nền đẹp cho PC và mobile">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container nav">
+            <div class="logo">
+                <i class="fas fa-image logo-icon"></i>
+                <span>ShareAnhGiup</span>
+            </div>
+            <div class="nav-actions">
+                <div class="language-selector">
+                    <button class="language-btn" type="button">
+                        <img src="https://flagsapi.com/VN/flat/64.png" class="flag-icon" alt="Tiếng Việt" id="flag-vi">
+                        <img src="https://flagsapi.com/GB/flat/64.png" class="flag-icon" alt="English" id="flag-en" style="display:none;">
+                        <span id="lang-label">Tiếng Việt</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="language-dropdown">
+                        <div class="language-option" data-lang="vi">
+                            <img src="https://flagsapi.com/VN/flat/64.png" class="flag-icon" alt="Tiếng Việt">
+                            Tiếng Việt
+                        </div>
+                        <div class="language-option" data-lang="en">
+                            <img src="https://flagsapi.com/GB/flat/64.png" class="flag-icon" alt="English">
+                            English
+                        </div>
+                    </div>
+                </div>
+                <button class="btn-icon" id="themeToggle" title="Đổi giao diện">
+                    <i class="fas fa-moon" id="themeIcon"></i>
+                </button>
+                <button class="btn btn-primary" id="submitBtn">
+                    <i class="fas fa-plus"></i>
+                    <span class="submit-text">Đăng ảnh</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <div class="container">
+            <!-- Hero Section -->
+            <section class="hero"></section>
+
+            <!-- Admin Panel -->
+            <div class="admin-panel" id="adminPanel" style="display: none;">
+                <div class="admin-toggle">
+                    <span class="admin-label"><i class="fas fa-user-shield"></i> Admin</span>
+                    <div class="toggle-switch" id="adminToggle">
+                        <div class="toggle-slider"></div>
+                    </div>
+                </div>
+                <p class="admin-info">
+                    <i class="fas fa-info-circle"></i>
+                    Chế độ admin đã bật. Bạn có thể duyệt hoặc xóa ảnh không phù hợp.
+                </p>
+            </div>
+
+            <!-- Category & Filter -->
+            <div class="category-filter">
+                <div class="filter-header">
+                    <div class="filter-title"><i class="fas fa-filter"></i> Danh mục</div>
+                    <div class="category-tabs"></div>
+                </div>
+                <div class="search-sort">
+                    <div class="search-box">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" id="searchInput" class="search-input" placeholder="Tìm kiếm ảnh...">
+                    </div>
+                    <select id="sortSelect" class="sort-select">
+                        <option value="newest">Mới nhất</option>
+                        <option value="oldest">Cũ nhất</option>
+                        <option value="popular">Phổ biến</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Wallpaper Grid -->
+            <div class="wallpaper-grid" id="wallpaperGrid"></div>
+
+            <!-- Pagination -->
+            <div class="pagination" id="pagination"></div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content" style="display: flex; justify-content: space-between; align-items: flex-start; gap: 2rem; flex-wrap: wrap;">
+                <div class="footer-section" style="flex:1; min-width:200px; text-align:center;">
+                    <div class="logo" style="justify-content:center;">
+                        <i class="fas fa-image logo-icon"></i>
+                        <span>ShareAnhGiup</span>
+                    </div>
+                    <p style="color: var(--text-muted); margin-top: 0.5rem;">
+                        Nền tảng chia sẻ ảnh đẹp cho mọi người
+                    </p>
+                </div>
+                <div class="footer-section" style="flex:1; min-width:200px; text-align:center;">
+                    <h3>Liên kết</h3>
+                    <div class="footer-links" style="justify-content:center;">
+                        <a href="#"><i class="fab fa-github"></i> GitHub</a>
+                        <a href="#"><i class="fab fa-facebook"></i> Facebook</a>
+                        <a href="#"><i class="fab fa-instagram"></i> Instagram</a>
+                    </div>
+                </div>
+                <div class="footer-section" style="flex:1; min-width:200px; text-align:center;">
+                    <h3>Liên hệ</h3>
+                    <div style="color: var(--text-muted);">shareanhgiup@gmail.com</div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                © 2024 ShareAnhGiup. Ảnh do người dùng đóng góp.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Submit Wallpaper Modal -->
+    <div class="modal" id="submitModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Đăng ảnh mới</h2>
+                <button class="close-btn" id="closeSubmitModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="submitForm">
+                <div class="form-group">
+                    <label class="form-label" for="categorySelect">Danh mục</label>
+                    <select class="form-select" id="categorySelect" required>
+                        <option value="">Chọn danh mục</option>
+                        <option value="pc">PC (Nền ngang)</option>
+                        <option value="mobile">Mobile (Nền dọc)</option>
+                        <option value="nature">Thiên nhiên</option>
+                        <option value="abstract">Trừu tượng</option>
+                        <option value="minimal">Tối giản</option>
+                        <option value="space">Vũ trụ</option>
+                        <option value="animals">Động vật</option>
+                        <option value="architecture">Kiến trúc</option>
+                        <option value="cars">Xe cộ</option>
+                        <option value="anime">Anime</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Tải ảnh lên</label>
+                    <div class="file-upload" id="fileUpload">
+                        <input type="file" id="fileInput" accept="image/*" style="display: none;" required>
+                        <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                        <div class="upload-text">Kéo thả hoặc click để chọn ảnh</div>
+                        <div class="upload-hint">Định dạng: JPG, PNG, WebP (Tối đa: 10MB)</div>
+                    </div>
+                    <div id="imagePreview" class="image-preview" style="display: none;">
+                        <img id="previewImg" class="preview-img">
+                        <div id="imageInfo" class="preview-info"></div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="titleInput">Tiêu đề</label>
+                    <input type="text" class="form-input" id="titleInput" placeholder="Nhập tiêu đề ảnh" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="descriptionInput">Mô tả</label>
+                    <textarea class="form-textarea" id="descriptionInput" placeholder="Mô tả về ảnh (tùy chọn)"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary w-full">
+                    <span class="submit-btn-text">Đăng ảnh</span>
+                    <div class="loading" style="display: none; margin-left: 0.5rem;"></div>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Image Viewer Modal -->
+    <div class="modal image-viewer" id="imageViewer">
+        <div class="modal-content">
+            <div class="viewer-controls">
+                <button class="viewer-btn" id="downloadBtn" title="Tải xuống">
+                    <i class="fas fa-download"></i>
+                </button>
+                <button class="viewer-btn" id="closeViewer" title="Đóng">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <img class="viewer-image" id="viewerImage" alt="Wallpaper">
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div class="notification" id="notification">
+        <span id="notificationText"></span>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
