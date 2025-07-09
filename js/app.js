@@ -832,16 +832,17 @@ async function uploadImageMultiSource(file) {
 // Hàm lưu ảnh lên Google Sheets/OpenSheet
 async function saveImageToSheet({ url, title, category, description }) {
     const apiUrl = 'https://script.google.com/macros/s/AKfycbwaTVkxPL7BAOx7sczHx9udc1_hRr3msd-w86NX-ByGOXFKuFgp-yUVcLeChv8AqDak/exec'; // Thay bằng link Google Apps Script hoặc OpenSheet
-    await fetch(apiUrl, {
+    const res = await fetch(apiUrl, {
         method: 'POST',
         body: JSON.stringify({ url, title, category, description }),
         headers: { 'Content-Type': 'application/json' }
     });
+    if (!res.ok) throw new Error('Lỗi lưu vào Google Sheet');
 }
 
 // Hàm lấy danh sách ảnh từ Google Sheets/OpenSheet
 async function loadImagesFromSheet() {
-    const apiUrl = 'https://script.google.com/macros/s/AKfycbwaTVkxPL7BAOx7sczHx9udc1_hRr3msd-w86NX-ByGOXFKuFgp-yUVcLeChv8AqDak/exec'; // Thay bằng link Google Apps Script hoặc OpenSheet
+    const apiUrl = 'https://script.google.com/macros/s/AKfycbwgp7rmaDLw41vNaj0oSuerfn5OnEMZk9qVIqXGOE1dcl08BMHVQcxlqHnYprj4o_Ys/exec'; // Thay bằng link Google Apps Script hoặc OpenSheet
     const res = await fetch(apiUrl);
     const data = await res.json();
     currentState.images = data.map((item, idx) => ({
