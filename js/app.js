@@ -165,11 +165,11 @@ const elements = {
 };
 
 // Initialize app
-function initApp() {
+async function initApp() {
     loadState();
     initializeElements();
     setupEventListeners();
-    loadImages();
+    await loadImagesFromSheet();
     renderApp();
     showWelcomeMessage();
 }
@@ -620,25 +620,27 @@ function renderAdminPanel() {
 // Update language UI
 function updateLanguageUI() {
     if (!elements.languageBtn) return;
-    
-    const currentLang = CONFIG.languages[currentState.language];
+
+    // Sử dụng ảnh local
+    let flagSrc = currentState.language === 'vi' ? 'images/vn64.png' : 'images/en64.png';
+    let langLabel = currentState.language === 'vi' ? 'Tiếng Việt' : 'English';
     elements.languageBtn.innerHTML = `
-        <img src="data:image/svg+xml;base64,${btoa(getFlagSVG(currentState.language))}" 
-             alt="${currentLang.name}" class="flag-icon">
-        <span>${currentLang.name}</span>
+        <img src="${flagSrc}" alt="${langLabel}" class="flag-icon">
+        <span>${langLabel}</span>
         <i class="fas fa-chevron-down"></i>
     `;
-    
+
     if (elements.languageDropdown) {
-        elements.languageDropdown.innerHTML = Object.entries(CONFIG.languages).map(([code, lang]) => `
-            <div class="language-option ${code === currentState.language ? 'active' : ''}" 
-                 data-lang="${code}">
-                <img src="data:image/svg+xml;base64,${btoa(getFlagSVG(code))}" 
-                     alt="${lang.name}" class="flag-icon">
-                <span>${lang.name}</span>
+        elements.languageDropdown.innerHTML = `
+            <div class="language-option ${currentState.language === 'vi' ? 'active' : ''}" data-lang="vi">
+                <img src="images/vn64.png" alt="Tiếng Việt" class="flag-icon">
+                <span>Tiếng Việt</span>
             </div>
-        `).join('');
-        
+            <div class="language-option ${currentState.language === 'en' ? 'active' : ''}" data-lang="en">
+                <img src="images/en64.png" alt="English" class="flag-icon">
+                <span>English</span>
+            </div>
+        `;
         // Add event listeners
         elements.languageDropdown.querySelectorAll('.language-option').forEach(option => {
             option.addEventListener('click', () => {
@@ -788,74 +790,108 @@ function handleFileUpload(file) {
     reader.readAsDataURL(file);
 }
 
-// Form submission
-async function handleFormSubmission(e) {
-    e.preventDefault();
-    const formData = new FormData(elements.submitForm);
-    const file = elements.fileInput?.files[0];
-    const title = elements.titleInput?.value;
-    const category = elements.categorySelect?.value;
-    const description = elements.descriptionInput?.value;
-
-    if (!file || !title || !category) {
-        showNotification('Vui lòng điền đầy đủ thông tin', 'error');
-        return;
-    }
-
-    // Show loading
-    const submitBtn = elements.submitForm?.querySelector('button[type="submit"]');
-    const originalText = submitBtn?.textContent;
-    if (submitBtn) {
-        submitBtn.innerHTML = `<div class="loading"></div> ${TRANSLATIONS[currentState.language].submitting}`;
-        submitBtn.disabled = true;
-    }
-
-    // Upload lên Catbox
+// Hàm upload đa nguồn
+async function uploadImageMultiSource(file) {
+    // 1. Catbox
     try {
         const catboxForm = new FormData();
         catboxForm.append('reqtype', 'fileupload');
         catboxForm.append('fileToUpload', file);
-        const response = await fetch('https://catbox.moe/user/api.php', {
+        const res = await fetch('https://catbox.moe/user/api.php', { method: 'POST', body: catboxForm });
+        const url = await res.text();
+        if (url.startsWith('https://')) return url.trim();
+    } catch (e) {}
+    // 2. Imgur
+    try {
+        const formData = new FormData();
+        formData.append('image', file);
+        const res = await fetch('https://api.imgur.com/3/image', {
             method: 'POST',
-            body: catboxForm
+            headers: { Authorization: 'Client-ID 2a4f6e69b84ba0b' },
+            body: formData
         });
-        const url = await response.text();
-        if (!url.startsWith('https://')) throw new Error('Upload thất bại');
+        const data = await res.json();
+        if (data.success && data.data && data.data.link) return data.data.link;
+    } catch (e) {}
+    // 3. ImgBB
+    try {
+        const apiKey = '505e8ef3b0f85c1716178c29e2bb4996'; // Thay bằng API key của bạn
+        const formData = new FormData();
+        formData.append('image', file);
+        const res = await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, {
+            method: 'POST',
+            body: formData
+        });
+        const data = await res.json();
+        if (data.success && data.data && data.data.url) return data.data.url;
+    } catch (e) {}
+    throw new Error('Tất cả nguồn upload đều lỗi!');
+}
 
-        // Tạo object ảnh mới
-        const newImage = {
-            id: Math.max(0, ...currentState.images.map(img => img.id)) + 1,
-            title: title,
-            description: description,
-            category: category,
-            url: url.trim(),
-            thumbnail: url.trim(),
-            resolution: '1920x1080', // Có thể lấy từ preview nếu muốn
-            size: file.size,
-            uploadDate: new Date().toISOString(),
-            downloads: 0,
-            likes: 0,
-            status: 'pending' // Mặc định chờ duyệt
-        };
-        currentState.images.unshift(newImage);
-        localStorage.setItem('shareanh_images', JSON.stringify(currentState.images));
+// Hàm lưu ảnh lên Google Sheets/OpenSheet
+async function saveImageToSheet({ url, title, category, description }) {
+    const apiUrl = 'https://script.google.com/macros/s/AKfycbwaTVkxPL7BAOx7sczHx9udc1_hRr3msd-w86NX-ByGOXFKuFgp-yUVcLeChv8AqDak/exec'; // Thay bằng link Google Apps Script hoặc OpenSheet
+    await fetch(apiUrl, {
+        method: 'POST',
+        body: JSON.stringify({ url, title, category, description }),
+        headers: { 'Content-Type': 'application/json' }
+    });
+}
 
-        // Reset form và đóng modal
+// Hàm lấy danh sách ảnh từ Google Sheets/OpenSheet
+async function loadImagesFromSheet() {
+    const apiUrl = 'https://script.google.com/macros/s/AKfycbwaTVkxPL7BAOx7sczHx9udc1_hRr3msd-w86NX-ByGOXFKuFgp-yUVcLeChv8AqDak/exec'; // Thay bằng link Google Apps Script hoặc OpenSheet
+    const res = await fetch(apiUrl);
+    const data = await res.json();
+    currentState.images = data.map((item, idx) => ({
+        id: idx + 1,
+        title: item.title,
+        description: item.description,
+        category: item.category,
+        url: item.url,
+        thumbnail: item.url,
+        uploadDate: item.date || new Date().toISOString(),
+        status: 'approved'
+    }));
+    filterImages();
+}
+
+// Sửa lại hàm handleFormSubmission
+async function handleFormSubmission(e) {
+    e.preventDefault();
+    const file = elements.fileInput?.files[0];
+    const title = elements.titleInput?.value;
+    const category = elements.categorySelect?.value;
+    const description = elements.descriptionInput?.value;
+    if (!file || !title || !category) {
+        showNotification('Vui lòng điền đầy đủ thông tin', 'error');
+        return;
+    }
+    // Show loading
+    const submitBtn = elements.submitForm?.querySelector('button[type="submit"]');
+    const originalText = submitBtn?.textContent;
+    if (submitBtn) {
+        submitBtn.innerHTML = `<div class="loading"></div> Đang đăng...`;
+        submitBtn.disabled = true;
+    }
+    try {
+        const url = await uploadImageMultiSource(file);
+        await saveImageToSheet({ url, title, category, description });
         elements.submitForm?.reset();
         elements.imagePreview.style.display = 'none';
         elements.submitModal?.classList.remove('active');
         if (submitBtn) {
-            submitBtn.innerHTML = originalText || TRANSLATIONS[currentState.language].submit;
+            submitBtn.innerHTML = originalText || 'Đăng ảnh';
             submitBtn.disabled = false;
         }
-        filterImages();
+        showNotification('Đăng ảnh thành công!', 'success');
+        await loadImagesFromSheet();
         renderImages();
         renderPagination();
-        showNotification(TRANSLATIONS[currentState.language].upload_success, 'success');
     } catch (err) {
-        showNotification('Upload thất bại hoặc bị chặn bởi trình duyệt!', 'error');
+        showNotification('Upload thất bại ở tất cả nguồn!', 'error');
         if (submitBtn) {
-            submitBtn.innerHTML = originalText || TRANSLATIONS[currentState.language].submit;
+            submitBtn.innerHTML = originalText || 'Đăng ảnh';
             submitBtn.disabled = false;
         }
     }
