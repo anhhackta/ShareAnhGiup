@@ -792,10 +792,11 @@ function handleFileUpload(file) {
 
 // Hàm upload đa nguồn
 async function uploadImageMultiSource(file) {
-    // 1. Catbox
+    // 1. Catbox (có userhash)
     try {
         const catboxForm = new FormData();
         catboxForm.append('reqtype', 'fileupload');
+        catboxForm.append('userhash', 'c39452df258ebbf67037c1f0e'); // Thay bằng userhash của bạn
         catboxForm.append('fileToUpload', file);
         const res = await fetch('https://catbox.moe/user/api.php', { method: 'POST', body: catboxForm });
         const url = await res.text();
