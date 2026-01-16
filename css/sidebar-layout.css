@@ -1,0 +1,143 @@
+/* SIDEBAR LAYOUT STYLES */
+
+/* ==================== 2-COLUMN LAYOUT ==================== */
+.content-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: var(--space-8);
+    align-items: start;
+}
+
+.main-area {
+    min-width: 0;
+    /* Prevents grid blowout */
+}
+
+.sidebar {
+    position: sticky;
+    top: calc(72px + var(--space-6));
+    /* Header height + spacing */
+    max-height: calc(100vh - 120px);
+    overflow-y: auto;
+    padding: var(--space-6);
+}
+
+/* ==================== SIDEBAR TOP DOWNLOADS ==================== */
+.top-downloads-sidebar {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border-strong);
+    border-radius: var(--radius-xl);
+    padding: var(--space-6);
+    box-shadow: var(--shadow-md);
+}
+
+.sidebar-title {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--text-xl);
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: var(--space-6);
+    padding-bottom: var(--space-3);
+    border-bottom: 2px solid var(--glass-border-strong);
+}
+
+.sidebar-title i {
+    background: var(--gradient-warm);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: fire-flicker 2s ease-in-out infinite;
+}
+
+.top-downloads-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+
+.top-downloads-list .wallpaper-card {
+    border-radius: var(--radius-lg);
+}
+
+.top-downloads-list .card-image {
+    aspect-ratio: 16 / 9;
+}
+
+.top-downloads-list .badge-resolution {
+    font-size: 10px;
+    padding: var(--space-1) var(--space-2);
+}
+
+.top-downloads-list .download-count {
+    font-size: 11px;
+    padding: 2px var(--space-2);
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Empty State */
+.top-downloads-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-12) var(--space-4);
+    text-align: center;
+}
+
+.top-downloads-empty i {
+    opacity: 0.3;
+}
+
+.top-downloads-empty p {
+    line-height: 1.6;
+}
+
+.top-downloads-empty small {
+    display: block;
+    margin-top: var(--space-2);
+    font-size: 12px;
+    opacity: 0.7;
+}
+
+/* ==================== ADJUST FOOTER SPACING ==================== */
+.footer {
+    margin-top: var(--space-20);
+    padding-top: var(--space-20);
+}
+
+/* ==================== RESPONSIVE ==================== */
+@media (max-width: 1200px) {
+    .content-wrapper {
+        grid-template-columns: 1fr 280px;
+        gap: var(--space-6);
+    }
+}
+
+@media (max-width: 1024px) {
+    .content-wrapper {
+        grid-template-columns: 1fr;
+    }
+
+    .sidebar {
+        position: static;
+        max-height: none;
+        padding: 0;
+        margin-top: var(--space-8);
+    }
+
+    .top-downloads-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: var(--space-4);
+    }
+}
+
+@media (max-width: 768px) {
+    .top-downloads-list {
+        grid-template-columns: 1fr;
+    }
+}
