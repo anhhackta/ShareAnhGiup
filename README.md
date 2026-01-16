@@ -1,4 +1,4 @@
-# ShareDesktopMe 🖼️
+<h1 align="center">ShareDesktopMe 🖼️</h1>
 
 <div align="center">
 
