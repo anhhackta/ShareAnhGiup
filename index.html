@@ -1,205 +1,328 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ShareAnhGiup - Chia sẻ ảnh đẹp</title>
-    <meta name="description" content="Chia sẻ và khám phá ảnh nền đẹp cho PC và mobile">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <!-- SEO Meta Tags -->
+    <title>ShareDesktopMe - Premium Desktop Wallpapers & Backgrounds</title>
+    <meta name="description"
+        content="Discover and download stunning HD & 4K wallpapers for desktop and mobile. Free high-quality backgrounds, curated collection, smooth browsing experience.">
+    <meta name="keywords"
+        content="desktop wallpapers, 4K wallpapers, HD backgrounds, free wallpapers, minimalist, nature, abstract, anime">
+    <meta name="author" content="ShareDesktopMe">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="ShareDesktopMe - Premium Desktop Wallpapers">
+    <meta property="og:description" content="Discover stunning HD & 4K wallpapers. Free downloads, curated collection.">
+    <meta property="og:image" content="https://sharedesktopme.com/og-image.jpg">
+    <meta property="og:url" content="https://sharedesktopme.com/">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="ShareDesktopMe - Premium Desktop Wallpapers">
+    <meta name="twitter:description" content="Discover stunning HD & 4K wallpapers. Free downloads.">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🖥️</text></svg>">
+
+    <!-- Canonical -->
+    <link rel="canonical" href="https://sharedesktopme.com/">
+
+    <!-- Stylesheets -->
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/additional-styles.css">
+    <link rel="stylesheet" href="css/sidebar-layout.css">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Schema.org -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "ShareDesktopMe",
+        "url": "https://sharedesktopme.com/",
+        "description": "Premium desktop wallpaper collection. HD & 4K backgrounds for all devices.",
+        "potentialAction": {
+            "@type": "SearchAction",
+            "target": "https://sharedesktopme.com/?search={search_term_string}",
+            "query-input": "required name=search_term_string"
+        }
+    }
+    </script>
 </head>
+
 <body>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-content">
+            <div class="loading-logo">
+                <i class="fas fa-desktop"></i>
+                <span>ShareDesktopMe</span>
+            </div>
+            <div class="loading-spinner"></div>
+            <p class="loading-text">Loading beautiful wallpapers...</p>
+        </div>
+    </div>
+
     <!-- Header -->
     <header class="header">
-        <div class="container nav">
-                <div class="logo">
-                <i class="fas fa-image logo-icon"></i>
-                <span>ShareAnhGiup</span>
-                </div>
-                <div class="nav-actions">
-                <div class="language-selector">
-                    <button class="language-btn" type="button">
-                        <img src="images/vn64.png" class="flag-icon" alt="Tiếng Việt" id="flag-vi">
-                        <img src="images/en64.png" class="flag-icon" alt="English" id="flag-en" style="display:none;">
-                        <span id="lang-label">Tiếng Việt</span>
-                        <i class="fas fa-chevron-down"></i>
-                    </button>
-                    <div class="language-dropdown">
-                        <div class="language-option" data-lang="vi">
-                            <img src="https://flagsapi.com/VN/flat/64.png" class="flag-icon" alt="Tiếng Việt">
-                            Tiếng Việt
-                        </div>
-                        <div class="language-option" data-lang="en">
-                            <img src="https://flagsapi.com/GB/flat/64.png" class="flag-icon" alt="English">
-                            English
-                        </div>
-                    </div>
-                </div>
-                <button class="btn-icon" id="themeToggle" title="Đổi giao diện">
-                        <i class="fas fa-moon" id="themeIcon"></i>
-                    </button>
-                    <button class="btn btn-primary" id="submitBtn">
-                        <i class="fas fa-plus"></i>
-                    <span class="submit-text">Đăng ảnh</span>
-                    </button>
-                </div>
+        <div class="container header-container">
+            <!-- Logo -->
+            <a href="/" class="logo">
+                <i class="fas fa-desktop logo-icon"></i>
+                <span>ShareDesktopMe</span>
+            </a>
+
+            <!-- Search Bar -->
+            <div class="search-container">
+                <i class="fas fa-search search-icon"></i>
+                <input type="search" class="search-bar" id="searchInput" placeholder="Search wallpapers..."
+                    autocomplete="off">
+            </div>
+
+            <!-- Actions -->
+            <div class="header-actions">
+                <!-- Upload Button -->
+                <button class="btn-upload" id="uploadBtn">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <span>Upload</span>
+                </button>
+
+                <!-- Theme Toggle -->
+                <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                    <i class="fas fa-moon" id="themeIcon"></i>
+                </button>
+
+                <!-- Language Toggle -->
+                <button class="language-toggle" id="langToggle">
+                    <i class="fas fa-globe"></i>
+                    <span id="langText">EN</span>
+                </button>
+            </div>
         </div>
     </header>
 
     <!-- Main Content -->
-    <main class="main">
+    <main class="main-content">
         <div class="container">
-            <!-- Hero Section -->
-            <section class="hero"></section>
+            <div class="content-wrapper">
+                <!-- Main Area -->
+                <div class="main-area">
+                    <!-- Category Filters -->
+                    <nav class="nav-filters">
+                        <ul class="filter-list">
+                            <li><button class="filter-btn active" data-filter="all">All</button></li>
+                            <li><button class="filter-btn" data-filter="desktop">Desktop</button></li>
+                            <li><button class="filter-btn" data-filter="mobile">Mobile</button></li>
+                            <li><button class="filter-btn" data-filter="4k">4K Ultra HD</button></li>
+                            <li><button class="filter-btn" data-filter="anime">Anime</button></li>
+                            <li><button class="filter-btn" data-filter="nature">Nature</button></li>
+                            <li><button class="filter-btn" data-filter="abstract">Abstract</button></li>
+                            <li><button class="filter-btn" data-filter="minimal">Minimalist</button></li>
+                        </ul>
+                    </nav>
 
-            <!-- Admin Panel -->
-            <div class="admin-panel" id="adminPanel" style="display: none;">
-                <div class="admin-toggle">
-                    <span class="admin-label"><i class="fas fa-user-shield"></i> Admin</span>
-                    <div class="toggle-switch" id="adminToggle">
-                        <div class="toggle-slider"></div>
+                    <!-- Wallpaper Grid -->
+                    <div class="wallpaper-grid" id="wallpaperGrid">
+                        <!-- Cards will be dynamically inserted here -->
                     </div>
-                </div>
-                <p class="admin-info">
-                    <i class="fas fa-info-circle"></i>
-                    Chế độ admin đã bật. Bạn có thể duyệt hoặc xóa ảnh không phù hợp.
-                </p>
-            </div>
 
-            <!-- Category & Filter -->
-            <div class="category-filter">
-                <div class="filter-header">
-                    <div class="filter-title"><i class="fas fa-filter"></i> Danh mục</div>
-                    <div class="category-tabs"></div>
+                    <!-- Load More Trigger -->
+                    <div id="loadMoreTrigger" style="height: 1px;"></div>
                 </div>
-                <div class="search-sort">
-                    <div class="search-box">
-                        <i class="fas fa-search search-icon"></i>
-                        <input type="text" id="searchInput" class="search-input" placeholder="Tìm kiếm ảnh...">
+
+                <!-- Sidebar -->
+                <aside class="sidebar">
+                    <!-- Top Downloads Section -->
+                    <div class="top-downloads-sidebar" id="topDownloads">
+                        <h3 class="sidebar-title">
+                            <i class="fas fa-fire"></i>
+                            Top Downloads
+                        </h3>
+                        <div class="top-downloads-list" id="topDownloadsGrid">
+                            <!-- Will be populated by JS -->
+                        </div>
                     </div>
-                    <select id="sortSelect" class="sort-select">
-                        <option value="newest">Mới nhất</option>
-                        <option value="oldest">Cũ nhất</option>
-                        <option value="popular">Phổ biến</option>
-                    </select>
-                </div>
+                </aside>
             </div>
-
-            <!-- Wallpaper Grid -->
-            <div class="wallpaper-grid" id="wallpaperGrid"></div>
-
-            <!-- Pagination -->
-            <div class="pagination" id="pagination"></div>
         </div>
     </main>
 
     <!-- Footer -->
     <footer class="footer">
-        <div class="container">
-            <div class="footer-content" style="display: flex; justify-content: space-between; align-items: flex-start; gap: 2rem; flex-wrap: wrap;">
-                <div class="footer-section" style="flex:1; min-width:200px; text-align:center;">
-                    <div class="logo" style="justify-content:center;">
-                        <i class="fas fa-image logo-icon"></i>
-                        <span>ShareAnhGiup</span>
-                    </div>
-                    <p style="color: var(--text-muted); margin-top: 0.5rem;">
-                        Nền tảng chia sẻ ảnh đẹp cho mọi người
-                    </p>
+        <div class="container footer-content">
+            <div class="footer-section">
+                <div class="footer-logo">
+                    <i class="fas fa-desktop"></i>
+                    <span>ShareDesktopMe</span>
                 </div>
-                <div class="footer-section" style="flex:1; min-width:200px; text-align:center;">
-                    <h3>Liên kết</h3>
-                    <div class="footer-links" style="justify-content:center;">
-                    <a href="#"><i class="fab fa-github"></i> GitHub</a>
-                        <a href="#"><i class="fab fa-facebook"></i> Facebook</a>
-                    <a href="#"><i class="fab fa-instagram"></i> Instagram</a>
+                <p class="font-desc">Discover and share stunning wallpapers for your desktop and mobile devices.</p>
+                <div class="footer-stats">
+                    <div class="stat-item">
+                        <i class="fas fa-eye"></i>
+                        <span id="visitorCount">Loading...</span>
+                        <small>Visitors</small>
                     </div>
-                </div>
-                <div class="footer-section" style="flex:1; min-width:200px; text-align:center;">
-                    <h3>Liên hệ</h3>
-                    <div style="color: var(--text-muted);">shareanhgiup@gmail.com</div>
+                    <div class="stat-item">
+                        <i class="fas fa-download"></i>
+                        <span id="totalDownloads">0</span>
+                        <small>Downloads</small>
+                    </div>
                 </div>
             </div>
-            <div class="footer-bottom">
-                © 2024 ShareAnhGiup. Ảnh do người dùng đóng góp.
+
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <ul class="footer-links">
+                    <li><a href="#"><i class="fas fa-home"></i> Home</a></li>
+                    <li><a href="#" id="uploadFooterBtn"><i class="fas fa-upload"></i> Upload</a></li>
+                    <li><a href="#topDownloads"><i class="fas fa-fire"></i> Top Downloads</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h4>Categories</h4>
+                <ul class="footer-links">
+                    <li><a href="#" data-filter="desktop"><i class="fas fa-desktop"></i> Desktop</a></li>
+                    <li><a href="#" data-filter="mobile"><i class="fas fa-mobile-alt"></i> Mobile</a></li>
+                    <li><a href="#" data-filter="4k"><i class="fas fa-star"></i> 4K Ultra HD</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h4>Follow Us</h4>
+                <div class="social-links">
+                    <a href="#" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
+                    <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                    <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="#" aria-label="Pinterest"><i class="fab fa-pinterest"></i></a>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <div class="container">
+                <p>&copy; 2026 ShareDesktopMe.com - All rights reserved</p>
+                <p class="footer-love">Made with <i class="fas fa-heart"></i> for wallpaper lovers</p>
             </div>
         </div>
     </footer>
 
-    <!-- Submit Wallpaper Modal -->
-    <div class="modal" id="submitModal">
+    <!-- Upload Modal -->
+    <div class="modal" id="uploadModal">
+        <div class="modal-backdrop"></div>
         <div class="modal-content">
             <div class="modal-header">
-                <h2 class="modal-title">Đăng ảnh mới</h2>
-                <button class="close-btn" id="closeSubmitModal">
+                <h2>Upload Wallpaper</h2>
+                <button class="modal-close" id="closeUploadModal">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
-            <form id="submitForm">
-                <div class="form-group">
-                    <label class="form-label" for="categorySelect">Danh mục</label>
-                    <select class="form-select" id="categorySelect" required>
-                        <option value="">Chọn danh mục</option>
-                        <option value="pc">PC (Nền ngang)</option>
-                        <option value="mobile">Mobile (Nền dọc)</option>
-                        <option value="nature">Thiên nhiên</option>
-                        <option value="abstract">Trừu tượng</option>
-                        <option value="minimal">Tối giản</option>
-                        <option value="space">Vũ trụ</option>
-                        <option value="animals">Động vật</option>
-                        <option value="architecture">Kiến trúc</option>
-                        <option value="cars">Xe cộ</option>
-                        <option value="anime">Anime</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Tải ảnh lên</label>
-                    <div class="file-upload" id="fileUpload">
-                        <input type="file" id="fileInput" accept="image/*" style="display: none;" required>
+            <div class="modal-body">
+                <form id="uploadForm">
+                    <!-- Drag & Drop Area -->
+                    <div class="upload-area" id="uploadArea">
                         <i class="fas fa-cloud-upload-alt upload-icon"></i>
-                        <div class="upload-text">Kéo thả hoặc click để chọn ảnh</div>
-                        <div class="upload-hint">Định dạng: JPG, PNG, WebP (Tối đa: 10MB)</div>
+                        <p class="upload-text">Drag & drop your image here</p>
+                        <p class="upload-subtext">or click to browse</p>
+                        <input type="file" id="fileInput" accept="image/*" hidden>
                     </div>
-                    <div id="imagePreview" class="image-preview" style="display: none;">
-                        <img id="previewImg" class="preview-img">
-                        <div id="imageInfo" class="preview-info"></div>
+
+                    <!-- Image Preview -->
+                    <div class="image-preview" id="imagePreview" style="display: none;">
+                        <img id="previewImage" alt="Preview">
+                        <button type="button" class="btn-remove-image" id="removeImage">
+                            <i class="fas fa-times"></i>
+                        </button>
                     </div>
-                </div>
-                <div class="form-group">
-                    <label class="form-label" for="titleInput">Tiêu đề</label>
-                    <input type="text" class="form-input" id="titleInput" placeholder="Nhập tiêu đề ảnh" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label" for="descriptionInput">Mô tả</label>
-                    <textarea class="form-textarea" id="descriptionInput" placeholder="Mô tả về ảnh (tùy chọn)"></textarea>
-                </div>
-                <button type="submit" class="btn btn-primary w-full">
-                    <span class="submit-btn-text">Đăng ảnh</span>
-                    <div class="loading" style="display: none; margin-left: 0.5rem;"></div>
-                </button>
-            </form>
+
+                    <!-- Form Fields -->
+                    <div class="form-group">
+                        <label for="titleInput">Title *</label>
+                        <input type="text" id="titleInput" required placeholder="Give your wallpaper a title">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="categorySelect">Category *</label>
+                        <select id="categorySelect" required>
+                            <option value="">Select category</option>
+                            <option value="pc">Desktop</option>
+                            <option value="mobile">Mobile</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="descriptionInput">Description (Optional)</label>
+                        <textarea id="descriptionInput" rows="3" placeholder="Describe your wallpaper..."></textarea>
+                    </div>
+
+                    <!-- Upload Progress -->
+                    <div class="upload-progress" id="uploadProgress" style="display: none;">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                        <p class="progress-text" id="progressText">Uploading...</p>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" class="btn-submit">
+                        <i class="fas fa-upload"></i>
+                        Upload Wallpaper
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
 
     <!-- Image Viewer Modal -->
-    <div class="modal image-viewer" id="imageViewer">
-        <div class="modal-content">
-            <div class="viewer-controls">
-                <button class="viewer-btn" id="downloadBtn" title="Tải xuống">
-                    <i class="fas fa-download"></i>
-                </button>
-                <button class="viewer-btn" id="closeViewer" title="Đóng">
+    <div class="modal" id="viewerModal">
+        <div class="modal-backdrop"></div>
+        <div class="viewer-content">
+            <div class="viewer-header">
+                <h3 id="viewerTitle">Wallpaper Title</h3>
+                <button class="modal-close" id="closeViewer">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
-            <img class="viewer-image" id="viewerImage" alt="Wallpaper">
+
+            <div class="viewer-body">
+                <button class="viewer-nav viewer-prev" id="viewerPrev">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+
+                <img id="viewerImage" alt="Fullscreen wallpaper">
+
+                <button class="viewer-nav viewer-next" id="viewerNext">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+
+            <div class="viewer-footer">
+                <button class="btn-download-viewer" id="downloadViewer">
+                    <i class="fas fa-download"></i>
+                    Download
+                </button>
+                <button class="btn-share">
+                    <i class="fas fa-share-alt"></i>
+                    Share
+                </button>
+            </div>
         </div>
     </div>
 
     <!-- Notification -->
     <div class="notification" id="notification">
-        <span id="notificationText"></span>
+        <i class="fas fa-check-circle notification-icon"></i>
+        <span id="notificationText">Success!</span>
     </div>
 
+    <!-- JavaScript -->
     <script src="js/app.js"></script>
 </body>
+
 </html>
