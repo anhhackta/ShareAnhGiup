@@ -223,10 +223,27 @@ function initializeElements() {
 
 // ==================== EVENT LISTENERS ====================
 function setupEventListeners() {
-    // Theme toggle
-    elements.themeToggle?.addEventListener('click', toggleTheme);
+    // Theme toggle with smart hover
+    const themeToggle = elements.themeToggle;
+    const themeIcon = document.getElementById('themeIcon');
 
-    // Language selector
+    themeToggle?.addEventListener('click', toggleTheme);
+
+    // Hover: show opposite theme icon (preview what it will change to)
+    themeToggle?.addEventListener('mouseenter', () => {
+        if (themeIcon) {
+            // Show what theme will become: light→dark(moon), dark→light(sun)
+            themeIcon.className = currentState.theme === 'light' ? 'fas fa-moon' : 'fas fa-sun';
+        }
+    });
+    themeToggle?.addEventListener('mouseleave', () => {
+        if (themeIcon) {
+            // Show current theme: light=sun, dark=moon
+            themeIcon.className = currentState.theme === 'light' ? 'fas fa-sun' : 'fas fa-moon';
+        }
+    });
+
+    // Language selector (old dropdown style)
     elements.languageBtn?.addEventListener('click', toggleLanguageDropdown);
     document.addEventListener('click', (e) => {
         if (!elements.languageSelector?.contains(e.target)) {
@@ -234,13 +251,112 @@ function setupEventListeners() {
         }
     });
 
-    // Submit modal
+    // ===== SOUND TOGGLE =====
+    const soundToggle = document.getElementById('soundToggle');
+    const soundIcon = document.getElementById('soundIcon');
+    const bgMusic = document.getElementById('bgMusic');
+    let isPlaying = false; // Tracks actual playing state
+
+    const setIcon = (playing) => {
+        if (soundIcon) soundIcon.className = playing ? 'fas fa-volume-up' : 'fas fa-volume-mute';
+    };
+
+    const play = () => {
+        if (!bgMusic) return;
+        bgMusic.volume = 0.3;
+        bgMusic.play().then(() => { isPlaying = true; setIcon(true); })
+            .catch(e => console.log('Play failed:', e));
+    };
+
+    const pause = () => {
+        if (!bgMusic) return;
+        bgMusic.pause();
+        isPlaying = false;
+        setIcon(false);
+    };
+
+    // Click button to toggle
+    soundToggle?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        isPlaying ? pause() : play();
+    });
+
+    // Hover effects
+    soundToggle?.addEventListener('mouseenter', () => {
+        setIcon(!isPlaying); // Show opposite
+        if (isPlaying && bgMusic) bgMusic.volume = 0.1;
+    });
+    soundToggle?.addEventListener('mouseleave', () => {
+        setIcon(isPlaying); // Restore current state
+        if (isPlaying && bgMusic) bgMusic.volume = 0.3;
+    });
+
+    // First click anywhere starts music
+    let firstClick = true;
+    document.addEventListener('click', () => {
+        if (firstClick && bgMusic) { play(); firstClick = false; }
+    });
+
+    // Submit modal (old)
     elements.submitBtn?.addEventListener('click', () => {
         elements.submitModal?.classList.add('active');
     });
 
     elements.emptyUploadBtn?.addEventListener('click', () => {
         elements.submitModal?.classList.add('active');
+    });
+
+    // Upload modal (new design)
+    const uploadBtn = document.getElementById('uploadBtn');
+    const uploadModal = document.getElementById('uploadModal');
+    const closeUploadModal = document.getElementById('closeUploadModal');
+
+    uploadBtn?.addEventListener('click', () => {
+        uploadModal?.classList.add('show');
+    });
+
+    closeUploadModal?.addEventListener('click', () => {
+        uploadModal?.classList.remove('show');
+    });
+
+    // Close modal on backdrop click
+    uploadModal?.querySelector('.modal-backdrop')?.addEventListener('click', () => {
+        uploadModal.classList.remove('show');
+    });
+
+    // Upload form handling
+    const uploadArea = document.getElementById('uploadArea');
+    const fileInput = document.getElementById('fileInput');
+    const uploadForm = document.getElementById('uploadForm');
+    const imagePreview = document.getElementById('imagePreview');
+    const previewImage = document.getElementById('previewImage');
+    const removeImage = document.getElementById('removeImage');
+
+    uploadArea?.addEventListener('click', () => fileInput?.click());
+
+    fileInput?.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                previewImage.src = ev.target.result;
+                uploadArea.style.display = 'none';
+                imagePreview.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    removeImage?.addEventListener('click', () => {
+        fileInput.value = '';
+        previewImage.src = '';
+        uploadArea.style.display = 'block';
+        imagePreview.style.display = 'none';
+    });
+
+    uploadForm?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        await handleUploadSubmit(fileInput, uploadModal);
     });
 
     document.getElementById('closeSubmitModal')?.addEventListener('click', closeSubmitModal);
@@ -617,6 +733,69 @@ function formatDate(dateStr) {
         return date.toLocaleDateString('vi-VN');
     } catch {
         return '';
+    }
+}
+
+// ==================== UPLOAD HANDLER (NEW) ====================
+async function handleUploadSubmit(fileInput, uploadModal) {
+    const file = fileInput?.files[0];
+    const titleInput = document.getElementById('titleInput');
+    const categoryInputs = document.querySelectorAll('input[name="category"]');
+    const descriptionInput = document.getElementById('descriptionInput');
+
+    if (!file) {
+        showNotification('Please select an image', 'error');
+        return;
+    }
+
+    const title = titleInput?.value?.trim();
+    if (!title) {
+        showNotification('Please enter a title', 'error');
+        return;
+    }
+
+    let category = 'pc';
+    categoryInputs?.forEach(input => {
+        if (input.checked) category = input.value;
+    });
+
+    const description = descriptionInput?.value?.trim() || '';
+
+    try {
+        showNotification('Uploading to Catbox...', 'info');
+
+        // Upload to Catbox
+        const imageUrl = await uploadToCatbox(file);
+
+        showNotification('Saving to database...', 'info');
+
+        // Save to Google Sheets
+        await saveToSheet({
+            url: imageUrl,
+            title: title,
+            category: category,
+            description: description
+        });
+
+        showNotification('Upload successful! 🎉', 'success');
+
+        // Reset form
+        fileInput.value = '';
+        if (titleInput) titleInput.value = '';
+        if (descriptionInput) descriptionInput.value = '';
+        document.getElementById('uploadArea').style.display = 'block';
+        document.getElementById('imagePreview').style.display = 'none';
+
+        // Close modal
+        uploadModal?.classList.remove('show');
+
+        // Reload images
+        await loadImagesWithCache();
+        renderApp();
+
+    } catch (error) {
+        console.error('Upload error:', error);
+        showNotification('Upload failed: ' + error.message, 'error');
     }
 }
 
