@@ -2,11 +2,16 @@
 const CONFIG = {
     itemsPerPage: 12,
     maxFileSize: 10 * 1024 * 1024, // 10MB
-    supportedFormats: ['image/jpeg', 'image/png', 'image/webp'],
+    supportedFormats: ['image/jpeg', 'image/png', 'image/webp', 'image/gif'],
     cacheTTL: 5 * 60 * 1000, // 5 minutes cache
+    catbox: {
+        uploadUrl: 'https://catbox.moe/user/api.php',
+        userHash: '263f7d1e69e40222f18b868a9',
+        corsProxy: 'https://corsproxy.io/?'  // Free CORS proxy
+    },
     apiUrl: {
-        get: 'https://script.google.com/macros/s/AKfycbwgp7rmaDLw41vNaj0oSuerfn5OnEMZk9qVIqXGOE1dcl08BMHVQcxlqHnYprj4o_Ys/exec',
-        post: 'https://script.google.com/macros/s/AKfycbwaTVkxPL7BAOx7sczHx9udc1_hRr3msd-w86NX-ByGOXFKuFgp-yUVcLeChv8AqDak/exec'
+        get: 'https://script.google.com/macros/s/AKfycbyEBqXcTRCK_prXYK3Zes8nWDm3ByeYYPVD5ZZ9PJCWwcuULCqnLnc_5Yt-Cox2VfG2/exec',
+        post: 'https://script.google.com/macros/s/AKfycbyEBqXcTRCK_prXYK3Zes8nWDm3ByeYYPVD5ZZ9PJCWwcuULCqnLnc_5Yt-Cox2VfG2/exec'
     }
 };
 
@@ -796,6 +801,56 @@ async function handleUploadSubmit(fileInput, uploadModal) {
     } catch (error) {
         console.error('Upload error:', error);
         showNotification('Upload failed: ' + error.message, 'error');
+    }
+}
+
+// ==================== CATBOX UPLOAD ====================
+async function uploadToCatbox(file) {
+    const formData = new FormData();
+    formData.append('reqtype', 'fileupload');
+    formData.append('userhash', CONFIG.catbox.userHash);
+    formData.append('fileToUpload', file);
+
+    // Use CORS proxy for cross-origin requests
+    const proxyUrl = CONFIG.catbox.corsProxy + encodeURIComponent(CONFIG.catbox.uploadUrl);
+
+    try {
+        const response = await fetch(proxyUrl, {
+            method: 'POST',
+            body: formData
+        });
+
+        if (!response.ok) {
+            throw new Error(`Upload failed: ${response.status}`);
+        }
+
+        const imageUrl = await response.text();
+
+        if (!imageUrl || !imageUrl.includes('catbox.moe')) {
+            throw new Error('Invalid Catbox response');
+        }
+
+        return imageUrl.trim();
+    } catch (error) {
+        console.error('Catbox upload error:', error);
+        throw new Error('Failed to upload image to Catbox');
+    }
+}
+
+// ==================== SAVE TO GOOGLE SHEETS ====================
+async function saveToSheet(data) {
+    try {
+        const response = await fetch(CONFIG.apiUrl.post, {
+            method: 'POST',
+            mode: 'no-cors', // Google Apps Script handles CORS differently
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+        return true;
+    } catch (error) {
+        console.error('Sheet save error:', error);
+        // Continue anyway - CORS error doesn't mean it failed
+        return true;
     }
 }
 

@@ -1,5 +1,3 @@
-
-
 # Google Sheets Backend Setup Guide for ShareDesktopMe
 
 This guide shows you how to set up a free Google Sheets backend to store wallpaper metadata for ShareDesktopMe. Images are hosted on Catbox.moe while Google Sheets stores the URLs and information.
