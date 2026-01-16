@@ -101,21 +101,24 @@ async function initApp() {
     setupLazyLoading();
     setupBackToTop();
 
-    // Load images with caching
-    await loadImagesWithCache();
+    // Hide loading screen FAST - don't wait for API
+    setTimeout(() => hidePreloader(), 300);
 
-    // Render and hide preloader
-    renderApp();
-    hidePreloader();
+    // Load images in background
+    loadImagesWithCache().then(() => {
+        renderApp();
+    }).catch(err => {
+        console.error('Load error:', err);
+        renderApp(); // Show empty state
+    });
 }
 
 // Hide preloader with smooth transition
 function hidePreloader() {
-    const preloader = document.getElementById('preloader');
-    if (preloader) {
-        setTimeout(() => {
-            preloader.classList.add('hidden');
-        }, 600);
+    // Try both IDs (loadingScreen and preloader for compatibility)
+    const loadingScreen = document.getElementById('loadingScreen') || document.getElementById('preloader');
+    if (loadingScreen) {
+        loadingScreen.classList.add('hidden');
     }
 }
 
