@@ -1,5 +1,15 @@
 /* SIDEBAR LAYOUT STYLES */
 
+/* ==================== PAGE HEIGHT FIX ==================== */
+.main-content {
+    min-height: calc(100vh - 100px);
+    padding-bottom: 2rem;
+}
+
+.wallpaper-grid {
+    min-height: 400px;
+}
+
 /* ==================== 2-COLUMN LAYOUT ==================== */
 .content-wrapper {
     display: grid;
@@ -140,4 +150,15 @@
     .top-downloads-list {
         grid-template-columns: 1fr;
     }
+}
+
+/* ==================== MODAL SHOW STATE ==================== */
+.modal.show {
+    display: flex !important;
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal.show .modal-content {
+    transform: translateY(0) scale(1);
 }
