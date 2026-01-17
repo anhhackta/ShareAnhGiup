@@ -88,18 +88,19 @@
             <!-- Actions -->
             <div class="header-actions">
                 <!-- Upload Button -->
-                <button class="btn-upload" id="uploadBtn">
+                <button class="btn-upload" id="uploadBtn" title="Upload new wallpaper"
+                    aria-label="Upload new wallpaper">
                     <i class="fas fa-cloud-upload-alt"></i>
                     <span>Upload</span>
                 </button>
 
                 <!-- Theme Toggle -->
-                <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                <button class="theme-toggle" id="themeToggle" title="Toggle dark/light theme" aria-label="Toggle theme">
                     <i class="fas fa-sun" id="themeIcon"></i>
                 </button>
 
                 <!-- Sound Toggle -->
-                <button class="theme-toggle" id="soundToggle" aria-label="Toggle sound">
+                <button class="theme-toggle" id="soundToggle" title="Toggle background music" aria-label="Toggle sound">
                     <i class="fas fa-volume-mute" id="soundIcon"></i>
                 </button>
             </div>
@@ -223,7 +224,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h2>Upload Wallpaper</h2>
-                <button class="modal-close" id="closeUploadModal">
+                <button class="modal-close" id="closeUploadModal" title="Close modal" aria-label="Close upload modal">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
@@ -234,13 +235,14 @@
                         <i class="fas fa-cloud-upload-alt upload-icon"></i>
                         <p class="upload-text">Drag & drop your image here</p>
                         <p class="upload-subtext">or click to browse</p>
-                        <input type="file" id="fileInput" accept="image/*" hidden>
+                        <input type="file" id="fileInput" accept="image/*" hidden aria-label="Select image file">
                     </div>
 
                     <!-- Image Preview -->
                     <div class="image-preview" id="imagePreview" style="display: none;">
                         <img id="previewImage" alt="Preview">
-                        <button type="button" class="btn-remove-image" id="removeImage">
+                        <button type="button" class="btn-remove-image" id="removeImage" title="Remove image"
+                            aria-label="Remove selected image">
                             <i class="fas fa-times"></i>
                         </button>
                     </div>
@@ -289,19 +291,20 @@
         <div class="viewer-content">
             <div class="viewer-header">
                 <h3 id="viewerTitle">Wallpaper Title</h3>
-                <button class="modal-close" id="closeViewer">
+                <button class="modal-close" id="closeViewer" title="Close viewer" aria-label="Close image viewer">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
 
             <div class="viewer-body">
-                <button class="viewer-nav viewer-prev" id="viewerPrev">
+                <button class="viewer-nav viewer-prev" id="viewerPrev" title="Previous image"
+                    aria-label="Previous image">
                     <i class="fas fa-chevron-left"></i>
                 </button>
 
                 <img id="viewerImage" alt="Fullscreen wallpaper">
 
-                <button class="viewer-nav viewer-next" id="viewerNext">
+                <button class="viewer-nav viewer-next" id="viewerNext" title="Next image" aria-label="Next image">
                     <i class="fas fa-chevron-right"></i>
                 </button>
             </div>
@@ -311,7 +314,7 @@
                     <i class="fas fa-download"></i>
                     Download
                 </button>
-                <button class="btn-share">
+                <button class="btn-share" title="Share this wallpaper" aria-label="Share wallpaper">
                     <i class="fas fa-share-alt"></i>
                     Share
                 </button>

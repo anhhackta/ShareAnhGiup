@@ -230,10 +230,11 @@
     flex-direction: column;
     align-items: center;
     gap: var(--space-1);
-    padding: var(--space-4);
+    padding: var(--space-4) var(--space-6);
     background: var(--surface);
     border-radius: var(--radius-md);
     box-shadow: var(--shadow-sm);
+    min-width: 120px;  /* Wider for large numbers */
 }
 
 .stat-item i {
@@ -242,9 +243,12 @@
 }
 
 .stat-item span {
-    font-size: var(--text-2xl);
+    font-size: var(--text-xl);
     font-weight: 700;
     color: var(--text-primary);
+    white-space: nowrap;  /* Prevent wrapping */
+    min-width: 80px;      /* Space for 7 digits + commas */
+    text-align: center;
 }
 
 .stat-item small {

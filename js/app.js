@@ -7,11 +7,17 @@ const CONFIG = {
     catbox: {
         uploadUrl: 'https://catbox.moe/user/api.php',
         userHash: '263f7d1e69e40222f18b868a9',
-        corsProxy: 'https://corsproxy.io/?'  // Free CORS proxy
+        corsProxy: 'https://corsproxy.io/?'
     },
     apiUrl: {
-        get: 'https://script.google.com/macros/s/AKfycbyEBqXcTRCK_prXYK3Zes8nWDm3ByeYYPVD5ZZ9PJCWwcuULCqnLnc_5Yt-Cox2VfG2/exec',
-        post: 'https://script.google.com/macros/s/AKfycbyEBqXcTRCK_prXYK3Zes8nWDm3ByeYYPVD5ZZ9PJCWwcuULCqnLnc_5Yt-Cox2VfG2/exec'
+        get: 'https://script.google.com/macros/s/AKfycbwgMlZaHDessG9ueO3GdlgswiNXL3Gzd45I6ibuPq2F6pdUt9uYmLWG91vEqHKNjU9R/exec',
+        post: 'https://script.google.com/macros/s/AKfycbwgMlZaHDessG9ueO3GdlgswiNXL3Gzd45I6ibuPq2F6pdUt9uYmLWG91vEqHKNjU9R/exec'
+    },
+    // CountAPI for visitor tracking (free service)
+    counterApi: {
+        namespace: 'sharedesktopme',
+        visitorKey: 'visitors',
+        downloadKey: 'downloads'
     }
 };
 
@@ -106,6 +112,9 @@ async function initApp() {
     setupLazyLoading();
     setupBackToTop();
 
+    // Initialize counters (visitor + downloads)
+    initCounters();
+
     // Hide loading screen FAST - don't wait for API
     setTimeout(() => hidePreloader(), 300);
 
@@ -116,6 +125,79 @@ async function initApp() {
         console.error('Load error:', err);
         renderApp(); // Show empty state
     });
+}
+
+// ==================== COUNTER API (Free Service) ====================
+async function initCounters() {
+    // Track this visit and get visitor count
+    await trackVisitor();
+    // Get current download count
+    await getDownloadCount();
+}
+
+// Track visitor using CountAPI (free, no signup required)
+async function trackVisitor() {
+    const { namespace, visitorKey } = CONFIG.counterApi;
+    try {
+        // Hit API to increment visitor count
+        const res = await fetch(`https://api.countapi.xyz/hit/${namespace}/${visitorKey}`);
+        const data = await res.json();
+        updateVisitorDisplay(data.value);
+    } catch (e) {
+        console.warn('CountAPI visitor tracking failed:', e);
+        // Fallback to localStorage
+        let localCount = parseInt(localStorage.getItem('visitorCount') || '0');
+        localCount++;
+        localStorage.setItem('visitorCount', localCount);
+        updateVisitorDisplay(localCount);
+    }
+}
+
+// Get download count from CountAPI
+async function getDownloadCount() {
+    const { namespace, downloadKey } = CONFIG.counterApi;
+    try {
+        const res = await fetch(`https://api.countapi.xyz/get/${namespace}/${downloadKey}`);
+        const data = await res.json();
+        updateDownloadDisplay(data.value || 0);
+    } catch (e) {
+        console.warn('CountAPI download count failed:', e);
+        const localCount = parseInt(localStorage.getItem('downloadCount') || '0');
+        updateDownloadDisplay(localCount);
+    }
+}
+
+// Increment download count when user downloads
+async function incrementDownloadCount() {
+    const { namespace, downloadKey } = CONFIG.counterApi;
+    try {
+        const res = await fetch(`https://api.countapi.xyz/hit/${namespace}/${downloadKey}`);
+        const data = await res.json();
+        updateDownloadDisplay(data.value);
+    } catch (e) {
+        console.warn('CountAPI download increment failed:', e);
+        let localCount = parseInt(localStorage.getItem('downloadCount') || '0');
+        localCount++;
+        localStorage.setItem('downloadCount', localCount);
+        updateDownloadDisplay(localCount);
+    }
+}
+
+// Update visitor display in footer
+function updateVisitorDisplay(count) {
+    const el = document.getElementById('visitorCount');
+    if (el) el.textContent = formatNumber(count);
+}
+
+// Update download display in footer
+function updateDownloadDisplay(count) {
+    const el = document.getElementById('totalDownloads');
+    if (el) el.textContent = formatNumber(count);
+}
+
+// Format number with commas: 1234 → 1,234
+function formatNumber(num) {
+    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
 
 // Hide preloader with smooth transition
@@ -1153,7 +1235,7 @@ function closeSubmitModal() {
 // ==================== MULTI-SOURCE UPLOAD ====================
 async function uploadImageMultiSource(file, onProgress) {
     const sources = [
-        { name: 'Catbox', upload: uploadToCatbox },
+        { name: 'Catbox', upload: uploadToCatboxWithProxy },
         { name: 'Imgur', upload: uploadToImgur },
         { name: 'ImgBB', upload: uploadToImgBB }
     ];
@@ -1175,16 +1257,19 @@ async function uploadImageMultiSource(file, onProgress) {
     throw new Error('All upload sources failed');
 }
 
-async function uploadToCatbox(file) {
-    const form = new FormData();
-    form.append('reqtype', 'fileupload');
-    form.append('userhash', 'c39452df258ebbf67037c1f0e');
-    form.append('fileToUpload', file);
+async function uploadToCatboxWithProxy(file) {
+    const formData = new FormData();
+    formData.append('reqtype', 'fileupload');
+    formData.append('userhash', CONFIG.catbox.userHash);
+    formData.append('fileToUpload', file);
 
-    const res = await fetch('https://catbox.moe/user/api.php', { method: 'POST', body: form });
+    // Use CORS proxy for cross-origin requests from deployed sites
+    const proxyUrl = CONFIG.catbox.corsProxy + encodeURIComponent(CONFIG.catbox.uploadUrl);
+
+    const res = await fetch(proxyUrl, { method: 'POST', body: formData });
     const url = await res.text();
-    if (url.startsWith('https://')) return url.trim();
-    throw new Error('Invalid response');
+    if (url.includes('catbox.moe')) return url.trim();
+    throw new Error('Invalid Catbox response');
 }
 
 async function uploadToImgur(file) {
@@ -1301,6 +1386,9 @@ function downloadImage(url, title) {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+
+    // Increment download counter
+    incrementDownloadCount();
 
     showNotification(TRANSLATIONS[currentState.language].download_started, 'success');
 }
