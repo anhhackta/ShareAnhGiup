@@ -10,8 +10,8 @@ const CONFIG = {
         corsProxy: 'https://corsproxy.io/?'
     },
     apiUrl: {
-        get: 'https://script.google.com/macros/s/AKfycbwgMlZaHDessG9ueO3GdlgswiNXL3Gzd45I6ibuPq2F6pdUt9uYmLWG91vEqHKNjU9R/exec',
-        post: 'https://script.google.com/macros/s/AKfycbwgMlZaHDessG9ueO3GdlgswiNXL3Gzd45I6ibuPq2F6pdUt9uYmLWG91vEqHKNjU9R/exec'
+        get: 'https://script.google.com/macros/s/AKfycbwYQZNEV8a7w0zorLDHtoajrz9-Q36IZcO-7hiHsvbk6cqG0a10tLZGnTNDMHfsyKjz/exec',
+        post: 'https://script.google.com/macros/s/AKfycbwYQZNEV8a7w0zorLDHtoajrz9-Q36IZcO-7hiHsvbk6cqG0a10tLZGnTNDMHfsyKjz/exec'
     },
     // CountAPI for visitor tracking (free service)
     counterApi: {
